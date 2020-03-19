@@ -23,5 +23,5 @@ echo "    "
 
 echo "Allowing Privilege elevation for automation user"
 
-ansible -u root all -m raw -a "echo 'automation ALL=(ALL) NOPASSWD: ALL > /etc/sudoers.d/automation'"
+ansible -u root all -m raw -a "echo 'automation ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/automation"
 
