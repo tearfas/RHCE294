@@ -1,0 +1,10 @@
+[proxy]
+node1.rhce.sampleexam
+
+
+[webservers]
+node[2:3].rhce.sampleexam
+
+
+[database]
+node3.rhce.sampleexam
