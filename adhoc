@@ -8,12 +8,16 @@ echo "Creating User automation on all inventory hosts"
  
 ansible -u root all  -m raw -a "useradd -G wheel automation"
 
+echo "    "
+
 
 #### Copy SSH key to all hosts, store it in /home/automation/.ssh/authourized_keys ####
 
 echo "Copying SSH Key to all hosts"
 
 ansible -u root all -m authorized_key -a "user='automation' state='present' key='{{ lookup('file','/home/automation/.ssh/id_rsa.pub')}}'"
+
+echo "    "
 
 ####### privilege elevation for automation user #######
 
