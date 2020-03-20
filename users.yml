@@ -1,0 +1,48 @@
+###################### Task 6: Users and Groups ####################################################################
+## You have been provided with the list of users below.                                                           ##
+## Use /home/automation/plays/vars/user_list.yml file to save this content.                                       ##
+## Users:                                                                                                         ##
+##   username: alice     uid: 1201                                                                                ##
+##   username: vincent     uid: 1202                                                                              ##
+##   username: sandy uid: 2201                                                                                    ##
+##   username: patrick uid: 2202                                                                                  ##
+## Create a playbook /home/automation/plays/users.yml that uses the vault file /home/automation/plays/secret.yml  ##
+## to achieve the following:                                                                                      ##
+## Users whose user ID starts with 1 should be created on servers in the webservers host group.                   ## 
+## User password should be used from the user_password variable.                                                  ##
+## Users whose user ID starts with 2 should be created on servers in the database host group.                     ##
+## User password should be used from the user_password variable.                                                  ##
+##                                                                                                                ##
+## All users should be members of a supplementary group wheel.                                                    ##
+## Shell should be set to /bin/bash for all users.                                                                ## 
+## Account passwords should use the SHA512 hash format.                                                           ##
+## Each user should have an SSH key uploaded (use the SSH key that you create previously).                        ##
+## After running the playbook, users should be able to SSH into their respective servers without passwords        ##
+####################################################################################################################
+
+---
+- name: create users on webservers
+  hosts: webservers
+  become: yes
+  become_user: root
+  become_method: sudo
+  vars_files:
+    - user_list.yml
+    - secret.yml      
+
+  tasks: 
+    - name: create users with uid starting with 1 on webservers
+      user:
+        name: "{{ item.username }}"
+        uid: "{{ item.uid }}"
+        passowrd: "{{ user_password | passowrd_hash('sha512') }}" 
+        groups: wheel
+        shell: /bin/bash
+      loop: 
+        - "{{ user_list.yml }}" 
+      when: "{{ item.uid }}" >= 1900 
+
+    - name: upload password
+      authourized_keys:
+        
+

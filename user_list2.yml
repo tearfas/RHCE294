@@ -1,0 +1,16 @@
+users:
+  alice:
+    uname: alice
+    uid: 1201
+  
+  vincent:
+    uname: vincent
+    uid: 1202
+
+  sandy:
+    uname: sandy      
+    uid: 2201
+
+  patrick:
+    uname: patrick
+    uid: 2202
