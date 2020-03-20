@@ -1,0 +1,24 @@
+---
+- name: Create an EC2 instance
+  hosts: localhost
+  connection: local
+  gather_facts: False
+  vars:
+    keypair: bright
+    instance_type: t2.micro
+    image: ami-0c322300a1dd5dc79
+    region: us-east-1
+
+  tasks:
+    - name: Launch instance
+      ec2:
+         key_name: "{{ keypair }}"
+         group: default
+         instance_type: t2.micro
+         image: "{{ image }}"
+         region: "{{ region }}"
+         vpc_subnet_id: subnet-4b6f2d2c
+         assign_public_ip: yes
+         wait: true
+         
+

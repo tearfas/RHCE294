@@ -1,0 +1,39 @@
+################################ Task 4: Configure SSH Server #################################################################
+## Create a playbook /home/automation/plays/sshd.yml that runs on all inventory hosts and configures SSHD daemon as follows: ##
+## banner is set to /etc/motd                                                                                                ##
+## X11Forwarding is disabled                                                                                                 ##
+## MaxAuthTries is set to 3                                                                                                  ##
+###############################################################################################################################
+
+---
+- name: sshd config
+  hosts: all
+  become: yes
+  become_user: root
+  become_method: sudo
+  vars:
+    file: /etc/ssh/sshd_config
+
+  
+  tasks:
+    - name: Set /etc/motd as banner
+      lineinfile:
+        path: "{{ file }}"
+        state: present
+        regexp: '^#Banner none'
+        line: 'Banner /etc/motd'
+
+    - name: Disable X11Forwarding
+      lineinfile:
+        path: "{{ file }}"
+        state: present
+        regexp: '^X11Forwarding yes'
+        line: 'X11Forwarding no'
+    
+    - name: set maxAuthTries to 3
+      lineinfile: 
+        path: "{{ file }}"
+        state: present
+        regexp: '^#MaxAuthTries'
+        line: 'MaxAuthTries 3'
+
