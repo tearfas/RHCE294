@@ -38,11 +38,14 @@
         passowrd: "{{ user_password | passowrd_hash('sha512') }}" 
         groups: wheel
         shell: /bin/bash
-      loop: 
-        - "{{ user_list.yml }}" 
-      when: "{{ item.uid }}" >= 1900 
+      loop:  "{{ user_list.yml }}" 
+      when: "{{ item.uid }}" < 1900 
 
     - name: upload password
       authourized_keys:
+        user: "{{ item.username }}"
+        key: "{{ lookup('file','/home/automation/.ssh/id_rsa.pub')}}"
+      loop: "{{ user_list.yml }}"
+      when: "{{ item.uid }}" < 1900   
         
 
