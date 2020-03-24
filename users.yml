@@ -1,0 +1,82 @@
+###################### Task 6: Users and Groups ####################################################################
+## You have been provided with the list of users below.                                                           ##
+## Use /home/automation/plays/vars/user_list.yml file to save this content.                                       ##
+## Users:                                                                                                         ##
+##   username: alice     uid: 12.01                                                                                ##
+##   username: vincent     uid: 12.02                                                                              ##
+##   username: sandy uid: 22.01                                                                                    ##
+##   username: patrick uid: 22.02                                                                                  ##
+## Create a playbook /home/automation/plays/users.yml that uses the vault file /home/automation/plays/secret.yml  ##
+## to achieve the following:                                                                                      ##
+## Users whose user ID starts with 1 should be created on servers in the webservers host group.                   ## 
+## User password should be used from the user_password variable.                                                  ##
+## Users whose user ID starts with 2 should be created on servers in the database host group.                     ##
+## User password should be used from the user_password variable.                                                  ##
+##                                                                                                                ##
+## All users should be members of a supplementary group wheel.                                                    ##
+## Shell should be set to /bin/bash for all users.                                                                ## 
+## Account passwords should use the SHA512 hash format.                                                           ##
+## Each user should have an SSH key uploaded (use the SSH key that you create previously).                        ##
+## After running the playbook, users should be able to SSH into their respective servers without passwords        ##
+####################################################################################################################
+
+---
+- name: create users on webservers
+  hosts: webservers
+  become: yes
+  become_user: root
+  become_method: sudo
+  vars_files:
+    - user_list.yml
+    - secret.yml
+  vars:
+    cond:      
+
+  tasks: 
+    - name: create users with uid starting with 1 on webservers
+      user:
+        name: "{{ item.username }}"
+        uid: "{{ item.uid }}"
+        passowrd: "{{ user_password | password_hash('sha512') }}" 
+        groups: wheel
+        shell: /bin/bash
+      #when: ( item.uid[0] == "1" )
+      when: (item.uid | string)[0] | int == 1
+      loop:  "{{ users }}" 
+
+    - name: upload ssh keys
+      authorized_key:
+        user: "{{ item.username }}"
+        key: "{{ lookup('file','/home/automation/.ssh/id_rsa.pub')}}"
+      #when: ( item.uid[0]  == "1" )
+      when: (item.uid | string)[0] | int == 1 
+      loop: "{{ users }}"
+
+- name: create users on database servers
+  hosts: database
+  become: yes
+  become_user: root
+  become_method: sudo
+  vars_files:
+    - user_list.yml
+    - secret.yml
+
+  tasks:
+    - name: create users with uid starting with 2 on database servers
+      user:
+        name: "{{ item.username }}"
+        uid: "{{ item.uid }}"
+        passowrd: "{{ user_password | password_hash('sha512') }}" 
+        groups: wheel
+        shell: /bin/bash
+      #when: ( item.uid[0]  == "2" )
+      when: (item.uid | string)[0] | int == 1
+      loop: "{{ users }}"
+
+    - name: upload ssh key
+      authorized_key:
+        user: "{{ item.username }}"
+        key: "{{ llokup('file','/home/automation/.ssh/id_rsa.pub') }}"
+      #when: ({{ item.uid[0] }} == "2" )
+      when: (item.uid | string)[0] | int == 1
+      loop: "{{ users }}"
