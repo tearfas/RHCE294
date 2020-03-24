@@ -1,0 +1,23 @@
+###################################### TASK 7 ######################################################################
+## Create a playbook /home/automation/plays/regular_tasks.yml that runs on servers in the proxyhost group and     ##
+## does the following:                                                                                            ##
+## A root crontab record is created that runs every hour.                                                         ##
+## The cron job appends the file /var/log/time.log with the output from the date command.                         ##
+#####################################################################################################################
+
+---
+- name: name cron task
+  hosts: proxy
+  become: yes
+  become_user: root
+  become_method: sudo
+
+  tasks:
+    - name: schedule a cron jon
+      cron:
+        name: dateoutput     
+        user: root
+        minute: "0"
+        hour: "*"
+        job: "date > /var/log/time.log"
+

@@ -1,0 +1,25 @@
+################################# TASK 8 #####################################################################
+## Create a playbook /home/automation/plays/repository.yml that runs on servers in the database host group  ##
+## and does the following:                                                                                  ##
+## A YUM repository file is created.                                                                        ##
+## The name of the repository is mysql56-community.                                                         ##
+## The description of the repository is “MySQL 5.6 YUM Repo”.                                               ##
+## Repository baseurl is http://repo.example.com/rpms.                                                      ##
+## Repository is enabled.                                                                                   ##
+##############################################################################################################
+
+
+- name: repo creation
+  hosts: all
+  become: yes
+  become_user: root
+  become_method: sudo
+
+  tasks:
+    - name: create mysql repo
+      yum_repository:
+        name: mysql56-community
+        description: "MySQL 5.6 YUM Repo"
+        baseurl: http://repo.example.com/rpms
+        enabled: yes
+
