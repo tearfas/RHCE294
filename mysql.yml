@@ -1,0 +1,11 @@
+---
+- name: mysql role
+  hosts: proxy
+  become: yes
+  become_user: root
+  become_method: sudo
+
+  roles:
+    - sample-mysql
+
+  

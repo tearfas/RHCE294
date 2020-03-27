@@ -1,0 +1,13 @@
+---
+- name: apache role
+  hosts: proxy
+  become: yes
+  become_user: root
+  become_method: sudo
+  vars:
+    ports:
+      - 80/tcp
+      - 443/tcp
+
+  roles:
+    - sample-apache

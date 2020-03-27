@@ -1,0 +1,6 @@
+---
+# defaults file for sample-apache
+#
+#ports:
+# - 80/tcp
+#  - 443/tcp
