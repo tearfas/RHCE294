@@ -1,0 +1,71 @@
+---
+# tasks file for sample-mysql
+
+- name: create 800MB partition on /dev/vdb
+  parted:
+    device: /dev/vdb
+    number: 1
+    state: present
+    part_start: 2MiB
+    part_end: 800MiB
+
+- name: create a volume group vg_database
+  lvg:
+    pvs: /dev/vdb1
+    vg: vg_database
+    state: present 
+
+- name: create 512MB logical volume lv_msql
+  lvol:
+    lv: lv_msql
+    vg: vg_database
+    size: 512M
+    active: yes 
+    state: present
+
+- name: create an XFS filesystem
+  filesystem:
+    fstype: xfs
+    dev: /dev/mapper/vg_database-lv_msql
+    #dev: /dev/vdb1
+    force: no  
+
+- name: create a mount -  /mnt/mysql_backups
+  file:
+    path: /mnt/mysql_backups
+    state: directory
+    mode: 755
+
+- name: mount lvol
+  mount:
+    path: /mnt/mysql_backups
+    src: /dev/mapper/vg_database-lv_msql    
+    fstype: xfs
+    state: mounted
+
+
+- name: install mysql server
+  yum:
+    name: mysql
+    state: latest
+
+- name: configure mysql config
+  template:
+    src: templates/my.cnf.j2 
+    dest: /etc/my.cnf
+
+
+- name: allow tcp 3306 on firewall
+  firewalld:
+    port: 3306/tcp
+    permanent: yes
+    immediate: yes   
+    state: enabled
+
+- name: start and enable mysql server
+  service: 
+    name: firewalld
+    state: started
+    enabled: yes
+
+

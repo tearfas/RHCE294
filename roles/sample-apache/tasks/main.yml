@@ -1,0 +1,28 @@
+---
+# tasks file for sample-apache
+#
+- name: Install packages
+  yum:
+    name: "{{ Packages }}"
+    state: latest
+
+- name: start firewall
+  service:
+    name: firewalld
+    state: started
+    enabled: yes
+
+- name: open firewall ports
+  firewalld: 
+    port: "{{ ports }}"
+    immediate: yes
+    permanent: yes
+    state: enabled
+
+- name: create index.thml
+  template:
+    src: templates/index.html.j2
+    dest: /var/www/html/index.html
+  notify: restart apache
+    
+
