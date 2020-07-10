@@ -1,0 +1,18 @@
+- name: ansible playbook task 06
+  hosts: all
+  vars_files:
+    - user_list.yml
+    - secret.yml
+  become: yes
+  become_user: root
+  become_method: sudo
+  
+  tasks:
+    - user:
+        name: "{{item.username}}"
+        uid: "{{item.uid}}"
+        password: "{{user_password|password_hash('sha512')}}"
+        groups: wheel
+        shell: /bin/bash
+      loop: "{{ users }}"
+      when: (ansible_fqdn in groups['webservers'] and item.uid|string|first == "1") or (ansible_fqdn in groups['database'] and item.uid|string|first == "2")

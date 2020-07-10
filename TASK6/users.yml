@@ -37,7 +37,7 @@
       user:
         name: "{{ item.username }}"
         uid: "{{ item.uid }}"
-        passowrd: "{{ user_password | password_hash('sha512') }}" 
+        password: "{{ user_password | password_hash('sha512') }}" 
         groups: wheel
         shell: /bin/bash
       #when: ( item.uid[0] == "1" )
@@ -66,7 +66,7 @@
       user:
         name: "{{ item.username }}"
         uid: "{{ item.uid }}"
-        passowrd: "{{ user_password | password_hash('sha512') }}" 
+        password: "{{ user_password | password_hash('sha512') }}" 
         groups: wheel
         shell: /bin/bash
       #when: ( item.uid[0]  == "2" )
@@ -76,7 +76,7 @@
     - name: upload ssh key
       authorized_key:
         user: "{{ item.username }}"
-        key: "{{ llokup('file','/home/automation/.ssh/id_rsa.pub') }}"
+        key: "{{ lookup('file','/home/automation/.ssh/id_rsa.pub') }}"
       #when: ({{ item.uid[0] }} == "2" )
       when: (item.uid | string)[0] | int == 1
       loop: "{{ users }}"
