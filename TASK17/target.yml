@@ -1,0 +1,18 @@
+####################################################################
+## Create a playbook /home/automation/plays/target.yml that runs ###
+## on hosts in the webservers host group and does the following: ###
+## Sets the default boot target to multi-user.                   ###
+####################################################################
+
+---
+- name: set default target
+  hosts: webservers
+  become: yes
+  become_user: root
+  become_method: sudo
+  tasks:
+    - name: set target
+      file:
+        src: /usr/lib/systemd/system/multi-user.target
+        dest: /etc/systemd/system/default.target
+        state: link

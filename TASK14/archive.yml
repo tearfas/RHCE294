@@ -1,0 +1,28 @@
+---
+- name: task 14 archive
+  hosts: database
+  become: yes
+  become_user: root
+  become_method: sudo
+  vars:
+    path: /mnt/mysql_backups
+    file: /mnt/mysql_backups/database_list.txt
+
+  tasks:
+    - name: create directory
+      file:
+        path: "{{ path }}"
+        state: directory
+        mode: 0755
+
+    - name: create database_list.txt
+      copy:
+        content: "dev,test,qa,prod"
+        dest: "{{ file }}"
+
+    - name: archive {{ file }} file
+      archive:
+        path: "{{ file }}"
+        dest: /mnt/mysql_backups/archive.gz
+        format: gz
+...
